@@ -81,27 +81,52 @@ means_summary <- emmeans::emmeans(lmer1, specs = ~ parent*fluoro, type="response
 
 ## Data formatting====
 
-cross_2 <- janitor::clean_names(cross_2)
+cross_2 <- lapply(list(cross_2_gfp, cross_2_rfp), janitor::clean_names)
 
-cross_2 <- 
-  cross_2 %>% 
-  drop_na(f2_raft) %>% 
+cross_2 <- list(cross_2_gfp, cross_2_rfp) %>% 
+  map(~ janitor::clean_names(.) %>% 
+        drop_na(f2_raft))
+
+cross_2[[1]] <- 
+  cross_2[[1]] %>% 
   mutate(gfp_w_copy = as.numeric(str_replace(gfp_w_copy, "-", "0"))) %>% 
   mutate(Win = gfp_w_donor+gfp_w_copy,
-         Loss = non_gfp_w_nhej_wt)
+         Loss = non_gfp_w_nhej_wt) %>% 
+  mutate(fluoro = "Green") 
+
+cross_2[[2]] <- 
+  cross_2[[2]] %>% 
+    mutate(Win = ds_red,
+         Loss = ds_red_1) %>% 
+  mutate(fluoro = "Red")
+
+cross_2_total <- cross_2 %>% 
+  map_df(~ select(., f2_raft, f1_cage, Win, Loss, fluoro))
+
+
+
 
 ## Mixed-effects model====
 
-lmer2<- glmmTMB((cbind(Win,Loss))~ 1 + (1|f2_raft), family=binomial, data=cross_2)
+lmer2<- glmmTMB((cbind(Win,Loss))~ fluoro + (1|f2_raft), family=binomial, data=cross_2_total)
 
 simulateResiduals(fittedModel = lmer2, plot = T)
 
-means_summary2 <- emmeans::emmeans(lmer2, specs= pairwise ~ 1, type="response")
+means_summary2 <- emmeans::emmeans(lmer2, specs= "fluoro", type="response")
 
-## w- conversion analysis====
+## w- conversion analysis ====
 
-lmer3<- glmmTMB(cbind(gfp_w_copy, non_gfp_w_nhej_wt)~ 1 + (1|f2_raft), family=binomial, data=cross_2)
+lmer3<- glmmTMB(cbind(gfp_w_copy, non_gfp_w_nhej_wt)~ 1, family=binomial, data=cross_2[[1]])
 
 simulateResiduals(fittedModel = lmer3, plot = T)
 
 means_summary3 <- emmeans::emmeans(lmer3, specs= pairwise ~ 1, type="response")
+
+
+## W- vs biased w+====
+
+cross_2_long <- cross_2[[1]] %>% pivot_longer(cols = gfp_w_donor:gfp_w_copy, names_to="chromosome")
+
+lmer4<- glmmTMB(cbind(value, (total-value))~ chromosome + (1|f2_raft), family=binomial, data=cross_2_long)
+
+emmeans::emmeans(lmer4, specs= "chromosome", type="response")

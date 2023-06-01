@@ -5,6 +5,7 @@ library(tidyverse)
 library(MuMIn)
 library(DHARMa)
 library(emmeans)
+library(glmmTMB)
 #______________====
 
 # Data ====
@@ -34,7 +35,7 @@ best.model <- get.models(dredged, subset=1)[[1]]
 
 lmm.model <- glmmTMB((cbind(win,loss))~ parent+(1|id), family=binomial, data=kmo_cross)
 
-emmeans::emmeans(lmm.model, specs=pairwise~parent, type="response")
+emmeans::emmeans(lmm.model, specs=pairwise  ~parent, type="response")
 
 emmeans::emmeans(lmm.model, specs=~1, type="response")
 
