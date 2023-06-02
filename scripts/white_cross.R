@@ -36,9 +36,17 @@ gfp_total <-
 
 ## Mixed-effects model ====
 
-lmer <- glmmTMB((cbind(win,loss))~ parent + (1|parent/id), family=binomial, data=gfp_total)
+### Single models for each sex====
 
-means_summary <- emmeans::emmeans(lmer, specs= pairwise ~ parent, type="response")
+single_sex_model <- function(sex){
+  model <- gfp_total %>% 
+    filter(parent == {{sex}}) %>% 
+    glmmTMB((cbind(win,loss))~ 1 + (1|parent/id), family=binomial, data=.)
+  summary(model)
+}
+
+single_sex_model("male")
+single_sex_model("female")
 
 
 ## Full model with Cas9 marker ====
@@ -120,7 +128,7 @@ lmer3<- glmmTMB(cbind(gfp_w_copy, non_gfp_w_nhej_wt)~ 1, family=binomial, data=c
 
 simulateResiduals(fittedModel = lmer3, plot = T)
 
-means_summary3 <- emmeans::emmeans(lmer3, specs= pairwise ~ 1, type="response")
+means_summary3 <- emmeans::emmeans(lmer3, specs= ~ 1, type="response")
 
 
 ## W- vs biased w+====
