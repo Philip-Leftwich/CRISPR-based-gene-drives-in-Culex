@@ -40,9 +40,9 @@ lmm.modela <- glmmTMB((cbind(win,loss))~ 1+(1|id), family=binomial, data=kmo_cro
 lmm.model <- glmmTMB((cbind(win,loss))~ parent+(1|id), family=binomial, data=kmo_cross)
 
 ### mean estimates
-emmeans::emmeans(lmm.model, specs=pairwise  ~parent, type="response")
+emmeans::emmeans(lmm.model, specs= ~ parent, type="response")
 
-emmeans::emmeans(lmm.model, specs=~1, type="response")
+emmeans::emmeans(lmm.model, specs= ~ 1, type="response")
 
 DHARMa::simulateResiduals(lmm.model, plot = T)
 

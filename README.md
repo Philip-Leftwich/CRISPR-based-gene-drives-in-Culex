@@ -16,4 +16,4 @@ R version 3.6.2 (2019-12-12)
  [9] purrr_0.3.4     readr_2.1.1     tidyr_1.1.3     tibble_3.1.1   
 [13] ggplot2_3.3.6   tidyverse_1.3.1 
 ```
-### Note that emmeans version usage can cause differences in precise confidence interval estimation at three decimal places
+> Note that emmeans version usage can cause differences in precise confidence interval estimation at three decimal places

@@ -34,23 +34,26 @@ gfp_total <-
   mutate(win = gfp_donor_copy,
        loss = gfp_w_indel + gfp_w_wt)
 
-## Mixed-effects model ====
 
-### Single models for each sex====
+## Single models for each sex ====
 
 single_sex_model <- function(sex){
   model <- gfp_total %>% 
     filter(parent == {{sex}}) %>% 
     glmmTMB((cbind(win,loss))~ 1 + (1|parent/id), family=binomial, data=.)
   summary(model)
+  list <- list(summary(model),
+       emmeans::emmeans(model, specs = ~ 1, type="response"))
+  return(list)
 }
+
+### Generates wald statistics for each sex
 
 single_sex_model("male")
 single_sex_model("female")
 
 
-## Full model with Cas9 marker ====
-
+## Add Cas9 marker ====
 
 rfp_female <- rfp_female %>% mutate(Parent = "female")
 rfp_male <- rfp_male %>% mutate(Parent = "male")
@@ -73,13 +76,13 @@ gfp_total <- gfp_total %>%
 
 cross_1 <- rbind(rfp_total, gfp_total)
 
-## Mixed effects model ====
+## Full Mixed effects model ====
 
 lmer1 <- glmmTMB((cbind(win,loss))~ parent*fluoro + (1|parent/id), family=binomial, data=cross_1)
 
 simulateResiduals(fittedModel = lmer1, plot = T)
 
-means_summary <- emmeans::emmeans(lmer1, specs = ~ parent*fluoro, type="response")
+emmeans::emmeans(lmer1, specs = ~ parent*fluoro, type="response")
 
 
 #______________====
@@ -117,24 +120,27 @@ cross_2_total <- cross_2 %>%
 ## Mixed-effects model====
 
 lmer2<- glmmTMB((cbind(Win,Loss))~ fluoro + (1|f2_raft), family=binomial, data=cross_2_total)
+summary(lmer2)
 
 simulateResiduals(fittedModel = lmer2, plot = T)
 
-means_summary2 <- emmeans::emmeans(lmer2, specs= "fluoro", type="response")
-
-## w- conversion analysis ====
-
-lmer3<- glmmTMB(cbind(gfp_w_copy, non_gfp_w_nhej_wt)~ 1, family=binomial, data=cross_2[[1]])
-
-simulateResiduals(fittedModel = lmer3, plot = T)
-
-means_summary3 <- emmeans::emmeans(lmer3, specs= ~ 1, type="response")
+emmeans::emmeans(lmer2, specs= "fluoro", type="response")
 
 
 ## W- vs biased w+====
 
 cross_2_long <- cross_2[[1]] %>% pivot_longer(cols = gfp_w_donor:gfp_w_copy, names_to="chromosome")
 
-lmer4<- glmmTMB(cbind(value, (total-value))~ chromosome + (1|f2_raft), family=binomial, data=cross_2_long)
+lmer3<- glmmTMB(cbind(value, (total-value))~ chromosome + (1|f2_raft), family=binomial, data=cross_2_long)
 
-emmeans::emmeans(lmer4, specs= "chromosome", type="response")
+emmeans::emmeans(lmer3, specs= "chromosome", type="response")
+
+## w- conversion analysis ====
+### this is based on the ratio of converted to uncovered w- chromosomes
+
+lmer4<- glmmTMB(cbind(gfp_w_copy, non_gfp_w_nhej_wt)~ 1, family=binomial, data=cross_2[[1]])
+
+simulateResiduals(fittedModel = lmer4, plot = T)
+
+emmeans::emmeans(lmer4, specs= ~ 1, type="response")
+
