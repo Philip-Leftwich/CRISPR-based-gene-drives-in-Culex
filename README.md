@@ -9,11 +9,11 @@ Tim Harvey-Samuel, Xuechun Feng, Emily M. Okamoto, Deepak-Kumar Purusothaman, Ph
 ## Version Information
 
 ```
-R version 3.6.2 (2019-12-12)
+R version 4.1.3 (2022-03-10)
 
- [1] emmeans_1.5.3   glmmTMB_1.1.2.3 janitor_2.1.0   DHARMa_0.3.3.0 
- [5] MuMIn_1.43.17   forcats_0.5.1   stringr_1.4.0   dplyr_1.0.6    
- [9] purrr_0.3.4     readr_2.1.1     tidyr_1.1.3     tibble_3.1.1   
-[13] ggplot2_3.3.6   tidyverse_1.3.1 
+ [1] emmeans_1.8.5   glmmTMB_1.1.4   janitor_2.2.0   DHARMa_0.4.6 
+ [5] MuMIn_1.46.0   forcats_0.5.2   stringr_1.5.0   dplyr_1.0.10    
+ [9] purrr_0.3.5     readr_2.1.3     tidyr_1.2.1     tibble_3.1.8   
+[13] ggplot2_3.4.2   tidyverse_1.3.2 
 ```
 > Note that emmeans version usage can cause differences in precise confidence interval estimation at three decimal places
