@@ -1,6 +1,8 @@
 # CRISPR-based-gene-drives-in-Culex
 Data and models for "CRISPR-based gene drives generate super-Mendelian inheritance in the disease vector *Culex quinquefasciatus*"
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8005546.svg)](https://doi.org/10.5281/zenodo.8005546)
+
 ## Authors
 
 Tim Harvey-Samuel, Xuechun Feng, Emily M. Okamoto, Deepak-Kumar Purusothaman, Philip T. Leftwich, Luke Alphey,Valentino M. Gantz
